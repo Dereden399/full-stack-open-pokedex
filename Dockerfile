@@ -23,6 +23,7 @@ COPY . .
 
 RUN npm install && npm run build
 FROM debian:bullseye
+RUN apt install -y curl
 
 LABEL fly_launch_runtime="nodejs"
 
