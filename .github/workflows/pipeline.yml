@@ -48,3 +48,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: "patch"
+  notification:
+    if: ${{ always() }}
+    needs: [simple-deployment-pipeline]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Success notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: ${{success() && github.event_name == 'push'}}
+        with:
+          severity: info
+          details: Successful deploy!
+          avatarUrl: ${{ github.event.sender.avatar_url }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Failure notification
+        uses: rjstone/discord-webhook-notify@v1
+        if: ${{failure() && github.event_name == 'push'}}
+        with:
+          severity: error
+          details: Deploy Failed!
+          avatarUrl: ${{ github.event.sender.avatar_url }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
